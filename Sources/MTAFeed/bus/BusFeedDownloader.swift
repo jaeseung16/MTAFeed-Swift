@@ -11,7 +11,7 @@ import os
 public class BusFeedDownloader {
     private let apiKey: String
     
-    init(apiKey: String) {
+    public init(apiKey: String) {
         self.apiKey = apiKey
     }
     

@@ -12,7 +12,7 @@ public enum MTAVehicleStatus: String {
     case stoppedAt
     case inTransitTo
     
-    init(from direction: TransitRealtime_VehiclePosition.VehicleStopStatus) {
+    public init(from direction: TransitRealtime_VehiclePosition.VehicleStopStatus) {
         switch direction {
         case .incomingAt:
             self = .incomingAt

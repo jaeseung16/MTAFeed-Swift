@@ -12,7 +12,7 @@ public class SubwayFeedDownloader {
     private let httpHeaderForApiKey = "x-api-key"
     private let apiKey: String
     
-    init(apiKey: String) {
+    public init(apiKey: String) {
         self.apiKey = apiKey
     }
     
