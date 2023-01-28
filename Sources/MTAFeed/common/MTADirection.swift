@@ -13,7 +13,7 @@ public enum MTADirection: String, Codable {
     case south = "S"
     case north = "N"
     
-    public init(from direction: NyctTripDescriptor.Direction) {
+    init(from direction: NyctTripDescriptor.Direction) {
         switch direction {
         case .north:
             self = .north
