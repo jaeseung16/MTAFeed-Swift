@@ -11,11 +11,13 @@ import os
 class MTAFeedProcessor {
     private static let logger = Logger()
     
-    static func process(_ feedMessage: TransitRealtime_FeedMessage) -> MTAFeedWrapper {
+    public static let shared = MTAFeedProcessor()
+    
+    func process(_ feedMessage: TransitRealtime_FeedMessage) -> MTAFeedWrapper {
         var mtaFeedWrapper = MTAFeedWrapper()
         
         let date = getFeedDate(from: feedMessage)
-        logger.debug("feedDate=\(date.formatted())")
+        MTAFeedProcessor.logger.debug("feedDate=\(date.formatted())")
         
         var vehicles = [MTAVehicle]()
         var tripUpdates = [MTATripUpdate]()
@@ -24,14 +26,14 @@ class MTAFeedProcessor {
             
             if let mtaVehicle = getVehicle(from: entity) {
                 if let routeId = mtaVehicle.trip?.routeId, "Q38" == routeId {
-                    logger.log("mtaVehicle = \(String(describing: mtaVehicle), privacy: .public)")
+                    MTAFeedProcessor.logger.log("mtaVehicle = \(String(describing: mtaVehicle), privacy: .public)")
                 }
                 vehicles.append(mtaVehicle)
             }
             
             if let tripUpdate = getTripUpdate(from: entity) {
                 if let routeId = tripUpdate.trip?.routeId, "Q38" == routeId {
-                    logger.log("tripUpdate = \(String(describing: tripUpdate), privacy: .public)")
+                    MTAFeedProcessor.logger.log("tripUpdate = \(String(describing: tripUpdate), privacy: .public)")
                 }
                 tripUpdates.append(tripUpdate)
             }
@@ -71,18 +73,18 @@ class MTAFeedProcessor {
         return mtaFeedWrapper
     }
     
-    private static func getFeedDate(from feedMessage: TransitRealtime_FeedMessage) -> Date {
+    private func getFeedDate(from feedMessage: TransitRealtime_FeedMessage) -> Date {
         return feedMessage.hasHeader ? Date(timeIntervalSince1970: TimeInterval(feedMessage.header.timestamp)) : Date()
     }
     
-    private static func getTripReplacementPeriods(from feedMessage: TransitRealtime_FeedMessage) -> [MTATripReplacementPeriod] {
+    private func getTripReplacementPeriods(from feedMessage: TransitRealtime_FeedMessage) -> [MTATripReplacementPeriod] {
         var mtaTripReplacementPeriods = [MTATripReplacementPeriod]()
         
         if feedMessage.hasHeader {
             let header = feedMessage.header
             if header.hasNyctFeedHeader {
                 let nyctFeedHeader = header.nyctFeedHeader
-                logger.log("\(String(describing: nyctFeedHeader), privacy: .public)")
+                MTAFeedProcessor.logger.log("\(String(describing: nyctFeedHeader), privacy: .public)")
                 
                 nyctFeedHeader.tripReplacementPeriod.forEach { period in
                     let routeId = period.hasRouteID ? period.routeID : nil
@@ -96,23 +98,23 @@ class MTAFeedProcessor {
                 }
                 
             }
-            logger.log("\(String(describing: mtaTripReplacementPeriods), privacy: .public)")
+            MTAFeedProcessor.logger.log("\(String(describing: mtaTripReplacementPeriods), privacy: .public)")
         }
         
         return mtaTripReplacementPeriods
     }
     
-    private static func getAlert(from entity: TransitRealtime_FeedEntity, at date: Date) -> MTAAlert? {
+    private func getAlert(from entity: TransitRealtime_FeedEntity, at date: Date) -> MTAAlert? {
         var mtaAlert: MTAAlert?
         if entity.hasAlert {
             let headerText = entity.alert.headerText.translation.first?.text ?? "No Header Text"
             mtaAlert = MTAAlert(delayedTrips: process(alert: entity.alert), headerText: headerText, date: date)
-            logger.debug("mtaAlert=\(String(describing: mtaAlert), privacy: .public)")
+            MTAFeedProcessor.logger.debug("mtaAlert=\(String(describing: mtaAlert), privacy: .public)")
         }
         return mtaAlert
     }
     
-    private static func getVehicle(from entity: TransitRealtime_FeedEntity) -> MTAVehicle? {
+    private func getVehicle(from entity: TransitRealtime_FeedEntity) -> MTAVehicle? {
         var mtaVehicle: MTAVehicle?
         if entity.hasVehicle {
             let vehicle = entity.vehicle
@@ -137,7 +139,7 @@ class MTAFeedProcessor {
         return mtaVehicle
     }
     
-    private static func getTripUpdate(from entity: TransitRealtime_FeedEntity) -> MTATripUpdate? {
+    private func getTripUpdate(from entity: TransitRealtime_FeedEntity) -> MTATripUpdate? {
         var mtaTripUpdate: MTATripUpdate?
         if entity.hasTripUpdate {
             let tripUpdate = entity.tripUpdate
@@ -174,7 +176,7 @@ class MTAFeedProcessor {
         return mtaTripUpdate
     }
     
-    private static func process(alert: TransitRealtime_Alert) -> [MTATrip] {
+    private func process(alert: TransitRealtime_Alert) -> [MTATrip] {
         var trips = [MTATrip]()
         alert.informedEntity.forEach { entity in
             if entity.hasTrip {
@@ -195,7 +197,7 @@ class MTAFeedProcessor {
         return trips
     }
     
-    private static func getMTATrip(from trip: TransitRealtime_TripDescriptor) -> MTATrip {
+    private func getMTATrip(from trip: TransitRealtime_TripDescriptor) -> MTATrip {
         let nyctTrip = trip.nyctTripDescriptor
         
         let tripId = trip.hasTripID ? trip.tripID : nil

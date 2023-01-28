@@ -8,8 +8,9 @@
 import Foundation
 import os
 
-public class BusFeedDownloader {
+public class BusFeedDownloader: MTAFeedDownloader {
     private let apiKey: String
+    private let mtaFeedDownloader = MTAFeedDownloader.shared
     
     public init(apiKey: String) {
         self.apiKey = apiKey
@@ -23,7 +24,7 @@ public class BusFeedDownloader {
         
         let urlRequest = URLRequest(url: url)
         
-        MTAFeedDownloader.download(with: urlRequest) { wrapper, error in
+        mtaFeedDownloader.download(with: urlRequest) { wrapper, error in
             completionHandler(wrapper, error)
         }
     }

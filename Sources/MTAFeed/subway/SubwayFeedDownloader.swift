@@ -11,6 +11,7 @@ import os
 public class SubwayFeedDownloader {
     private let httpHeaderForApiKey = "x-api-key"
     private let apiKey: String
+    private let mtaFeedDownloader = MTAFeedDownloader.shared
     
     public init(apiKey: String) {
         self.apiKey = apiKey
@@ -25,7 +26,7 @@ public class SubwayFeedDownloader {
         var urlRequest = URLRequest(url: url)
         urlRequest.setValue(apiKey, forHTTPHeaderField: httpHeaderForApiKey)
         
-        MTAFeedDownloader.download(with: urlRequest) { wrapper, error in
+        mtaFeedDownloader.download(with: urlRequest) { wrapper, error in
             completionHandler(wrapper, error)
         }
     }
