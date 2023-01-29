@@ -10,4 +10,9 @@ import Foundation
 public struct MTATripReplacementPeriod {
     public let routeId: String?
     public let endTime: Date?
+    
+    public init(routeId: String?, endTime: Date?) {
+        self.routeId = routeId
+        self.endTime = endTime
+    }
 }

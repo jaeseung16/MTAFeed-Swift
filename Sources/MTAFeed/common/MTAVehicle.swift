@@ -13,4 +13,12 @@ public struct MTAVehicle: Hashable {
     public let stopSequence: UInt?
     public let timestamp: Date?
     public let trip: MTATrip?
+    
+    public init(status: MTAVehicleStatus, stopId: String?, stopSequence: UInt?, timestamp: Date?, trip: MTATrip?) {
+        self.status = status
+        self.stopId = stopId
+        self.stopSequence = stopSequence
+        self.timestamp = timestamp
+        self.trip = trip
+    }
 }

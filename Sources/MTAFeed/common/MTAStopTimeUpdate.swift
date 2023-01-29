@@ -21,4 +21,12 @@ public struct MTAStopTimeUpdate: Identifiable {
     public var eventTime: Date? {
         return arrivalTime ?? departureTime
     }
+    
+    public init(stopId: String?, arrivalTime: Date?, departureTime: Date?, scheduledTrack: String?, actualTrack: String?) {
+        self.stopId = stopId
+        self.arrivalTime = arrivalTime
+        self.departureTime = departureTime
+        self.scheduledTrack = scheduledTrack
+        self.actualTrack = actualTrack
+    }
 }

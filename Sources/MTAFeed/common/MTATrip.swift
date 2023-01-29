@@ -19,6 +19,15 @@ public struct MTATrip: CustomStringConvertible, Hashable {
         return "MTATrip[tripId=\(String(describing: tripId)), routeId=\(String(describing: routeId)), start=\(String(describing: start)), assigned=\(String(describing: assigned)) trainId=\(String(describing: trainId)), direction=\(String(describing: direction))]"
     }
     
+    public init(tripId: String? = nil, routeId: String? = nil, start: Date? = nil, assigned: Bool? = nil, trainId: String? = nil, direction: MTADirection? = nil) {
+        self.tripId = tripId
+        self.routeId = routeId
+        self.start = start
+        self.assigned = assigned
+        self.trainId = trainId
+        self.direction = direction
+    }
+    
     public func getDirection() -> MTADirection? {
         if let direction = direction {
             return direction
