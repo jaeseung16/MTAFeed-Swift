@@ -8,12 +8,21 @@
 import Foundation
 import os
 
-public class MTAFeedDownloader {
-    private static let logger = Logger()
-    
-    public static let shared = MTAFeedDownloader()
+class MTAFeedDownloader<K> where K: MTAFeedURL {
+    private let logger = Logger()
     
     private let mtaFeedProcessor = MTAFeedProcessor.shared
+    
+    public func download(from mtaFeedURL: K, apiKey: String?, completionHandler: @escaping (MTAFeedWrapper?, MTAFeedDownloadError?) -> Void) -> Void {
+        guard let urlRequest = mtaFeedURL.urlRequest(apiKey: apiKey) else {
+            completionHandler(nil, MTAFeedDownloadError.noURL)
+            return
+        }
+        
+        download(with: urlRequest) { wrapper, error in
+            completionHandler(wrapper, error)
+        }
+    }
     
     public func download(with urlRequest: URLRequest, completionHandler: @escaping (MTAFeedWrapper?, MTAFeedDownloadError?) -> Void) -> Void {
         download(with: urlRequest) { result in
@@ -28,27 +37,27 @@ public class MTAFeedDownloader {
     }
     
     private func download(with urlRequest: URLRequest, completionHandler: @escaping (Result<TransitRealtime_FeedMessage, MTAFeedDownloadError>) -> Void) -> Void {
-        MTAFeedDownloader.logger.info("Start downloading feeds: urlRequest=\(urlRequest, privacy: .public)")
+        self.logger.info("Start downloading feeds: urlRequest=\(urlRequest, privacy: .public)")
         let start = Date()
         
         let task = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
             guard let data = data else {
-                MTAFeedDownloader.logger.error("No data downloaded: urlRequest=\(urlRequest, privacy: .public)")
+                self.logger.error("No data downloaded: urlRequest=\(urlRequest, privacy: .public)")
                 completionHandler(.failure(.noData))
                 return
             }
             
-            Self.logger.debug("data = \(String(describing: data))")
+            self.logger.debug("data = \(String(describing: data))")
             
             let feed = try? TransitRealtime_FeedMessage(serializedData: data, extensions: Nyct_u45Subway_Extensions)
             guard let feed = feed else {
-                MTAFeedDownloader.logger.error("Cannot parse feed data: urlRequest=\(urlRequest, privacy: .public)")
+                self.logger.error("Cannot parse feed data: urlRequest=\(urlRequest, privacy: .public)")
                 completionHandler(.failure(.cannotParse))
                 return
             }
             
             completionHandler(.success(feed))
-            MTAFeedDownloader.logger.log("It took \(DateInterval(start: start, end: Date()).duration) sec to download feed: urlRequest=\(urlRequest, privacy: .public)")
+            self.logger.log("It took \(DateInterval(start: start, end: Date()).duration) sec to download feed: urlRequest=\(urlRequest, privacy: .public)")
         }
         
         task.resume()
