@@ -15,7 +15,7 @@ public class MTAFeedDownloader<K> where K: MTAFeedURL {
     
     private let apiKey: String
     
-    init(apiKey: String) {
+    public init(apiKey: String) {
         self.apiKey = apiKey
     }
     
