@@ -14,30 +14,22 @@ class MTAFeedProcessor {
     public static let shared = MTAFeedProcessor()
     
     func process(_ feedMessage: TransitRealtime_FeedMessage) -> MTAFeedWrapper {
-        var mtaFeedWrapper = MTAFeedWrapper()
-        
         let date = getFeedDate(from: feedMessage)
         MTAFeedProcessor.logger.debug("feedDate=\(date.formatted())")
         
+        var alerts = [MTAAlert]()
         var vehicles = [MTAVehicle]()
         var tripUpdates = [MTATripUpdate]()
         feedMessage.entity.forEach { entity in
-            let _ = getAlert(from: entity, at: date)
-            
+            if let alert = getAlert(from: entity, at: date) {
+                alerts.append(alert)
+            }
             if let mtaVehicle = getVehicle(from: entity) {
-                if let routeId = mtaVehicle.trip?.routeId, "Q38" == routeId {
-                    MTAFeedProcessor.logger.log("mtaVehicle = \(String(describing: mtaVehicle), privacy: .public)")
-                }
                 vehicles.append(mtaVehicle)
             }
-            
             if let tripUpdate = getTripUpdate(from: entity) {
-                if let routeId = tripUpdate.trip?.routeId, "Q38" == routeId {
-                    MTAFeedProcessor.logger.log("tripUpdate = \(String(describing: tripUpdate), privacy: .public)")
-                }
                 tripUpdates.append(tripUpdate)
             }
-            
         }
         
         // MTAFeedDownloader.logger.info("vehicles.count = \(String(describing: vehicles.count), privacy: .public)")
@@ -55,7 +47,6 @@ class MTAFeedProcessor {
                 }
             }
         }
-        mtaFeedWrapper.vehiclesByStopId = vehiclesByStopId
         
         var tripUpdatesByTripId = [String: [MTATripUpdate]]()
         if !tripUpdates.isEmpty {
@@ -69,8 +60,8 @@ class MTAFeedProcessor {
                 }
             }
         }
-        mtaFeedWrapper.tripUpdatesByTripId = tripUpdatesByTripId
-        return mtaFeedWrapper
+        
+        return MTAFeedWrapper(alerts: alerts, vehiclesByStopId: vehiclesByStopId, tripUpdatesByTripId: tripUpdatesByTripId)
     }
     
     private func getFeedDate(from feedMessage: TransitRealtime_FeedMessage) -> Date {

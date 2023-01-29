@@ -8,6 +8,7 @@
 import Foundation
 
 public struct MTAFeedWrapper {
+    public var alerts = [MTAAlert]()
     public var vehiclesByStopId = [String: [MTAVehicle]]()
     public var tripUpdatesByTripId = [String: [MTATripUpdate]]()
 }
