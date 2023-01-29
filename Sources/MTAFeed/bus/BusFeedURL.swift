@@ -14,7 +14,16 @@ public enum BusFeedURL: String, CaseIterable {
     case vehiclePositions = "vehiclePositions"
     case alerts = "alerts"
     
-    public func url(with apiKey: String) -> URL? {
+    private func url(apiKey: String) -> URL? {
         return URL(string: BusFeedURL.urlPrefix + rawValue + apiKey)
+    }
+}
+
+extension BusFeedURL: MTAFeedURL {
+    public func urlRequest(apiKey: String?) -> URLRequest? {
+        guard let apiKey = apiKey, let url = url(apiKey: apiKey) else {
+            return nil
+        }
+        return URLRequest(url: url)
     }
 }
