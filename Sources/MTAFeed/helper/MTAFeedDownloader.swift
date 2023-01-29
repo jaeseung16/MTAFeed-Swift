@@ -8,7 +8,7 @@
 import Foundation
 import os
 
-class MTAFeedDownloader<K> where K: MTAFeedURL {
+public class MTAFeedDownloader<K> where K: MTAFeedURL {
     private let logger = Logger()
     
     private let mtaFeedProcessor = MTAFeedProcessor.shared

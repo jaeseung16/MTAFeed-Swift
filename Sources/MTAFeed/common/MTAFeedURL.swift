@@ -7,6 +7,6 @@
 
 import Foundation
 
-protocol MTAFeedURL {
+public protocol MTAFeedURL {
     func urlRequest(apiKey: String?) -> URLRequest?
 }
