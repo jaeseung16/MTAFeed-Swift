@@ -13,7 +13,13 @@ class MTAFeedDownloader<K> where K: MTAFeedURL {
     
     private let mtaFeedProcessor = MTAFeedProcessor.shared
     
-    public func download(from mtaFeedURL: K, apiKey: String?, completionHandler: @escaping (MTAFeedWrapper?, MTAFeedDownloadError?) -> Void) -> Void {
+    private let apiKey: String
+    
+    init(apiKey: String) {
+        self.apiKey = apiKey
+    }
+    
+    public func download(from mtaFeedURL: K, completionHandler: @escaping (MTAFeedWrapper?, MTAFeedDownloadError?) -> Void) -> Void {
         guard let urlRequest = mtaFeedURL.urlRequest(apiKey: apiKey) else {
             completionHandler(nil, MTAFeedDownloadError.noURL)
             return
