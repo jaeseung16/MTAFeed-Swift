@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum BusFeedURL: String, CaseIterable {
+public enum BusFeedURL: String, CaseIterable, Sendable {
     private static let urlPrefix = "https://gtfsrt.prod.obanyc.com/"
     
     case tripUpdates = "tripUpdates"
