@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct MTAAlert {
+public struct MTAAlert: Sendable {
     public let delayedTrips: [MTATrip]
     public let headerText: String
     public let date: Date

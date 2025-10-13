@@ -28,12 +28,14 @@ public enum SubwayFeedURL: String, CaseIterable {
 
 extension SubwayFeedURL: MTAFeedURL {
     public func urlRequest(apiKey: String?) -> URLRequest? {
-        guard let apiKey = apiKey, let url = url() else {
+        guard let url = url() else {
             return nil
         }
         
         var urlRequest = URLRequest(url: url)
-        urlRequest.setValue(apiKey, forHTTPHeaderField: SubwayFeedURL.httpHeaderForApiKey)
+        if let apiKey = apiKey {
+            urlRequest.setValue(apiKey, forHTTPHeaderField: SubwayFeedURL.httpHeaderForApiKey)
+        }
         return urlRequest
     }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum MTADirection: String, Codable {
+public enum MTADirection: String, Codable, Sendable {
     case east = "E"
     case west = "W"
     case south = "S"

@@ -8,7 +8,7 @@
 import Foundation
 import os
 
-class MTAFeedProcessor {
+final class MTAFeedProcessor: Sendable {
     private static let logger = Logger()
     
     public static let shared = MTAFeedProcessor()

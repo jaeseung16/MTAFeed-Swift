@@ -7,13 +7,13 @@
 
 import Foundation
 
-public struct MTATrip: CustomStringConvertible, Hashable {
-    public var tripId: String?
-    public var routeId: String?
-    public var start: Date?
-    public var assigned: Bool?
-    public var trainId: String?
-    public var direction: MTADirection?
+public struct MTATrip: CustomStringConvertible, Hashable, Sendable {
+    public let tripId: String?
+    public let routeId: String?
+    public let start: Date?
+    public let assigned: Bool?
+    public let trainId: String?
+    public let direction: MTADirection?
     
     public var description: String {
         return "MTATrip[tripId=\(String(describing: tripId)), routeId=\(String(describing: routeId)), start=\(String(describing: start)), assigned=\(String(describing: assigned)) trainId=\(String(describing: trainId)), direction=\(String(describing: direction))]"
