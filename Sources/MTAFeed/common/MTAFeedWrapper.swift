@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct MTAFeedWrapper {
+public struct MTAFeedWrapper: Sendable {
     public let alerts: [MTAAlert]
     public let vehiclesByStopId: [String: [MTAVehicle]]
     public let tripUpdatesByTripId: [String: [MTATripUpdate]]

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct MTATripUpdate {
+public struct MTATripUpdate: Sendable {
     public let trip: MTATrip?
     public let stopTimeUpdates: [MTAStopTimeUpdate]
     

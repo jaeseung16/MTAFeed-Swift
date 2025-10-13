@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct MTAStopTimeUpdate: Identifiable {
+public struct MTAStopTimeUpdate: Identifiable, Sendable {
     public var id: String {
         return stopId ?? UUID().uuidString
     }

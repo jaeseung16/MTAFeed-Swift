@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct MTATripReplacementPeriod {
+public struct MTATripReplacementPeriod: Sendable {
     public let routeId: String?
     public let endTime: Date?
     
