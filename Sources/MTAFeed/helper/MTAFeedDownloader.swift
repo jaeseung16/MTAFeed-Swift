@@ -19,7 +19,7 @@ public actor MTAFeedDownloader<K> where K: MTAFeedURL {
         self.apiKey = apiKey
     }
     
-    public func download(from mtaFeedURL: K, completionHandler: @escaping (MTAFeedWrapper?, MTAFeedDownloadError?) -> Void) -> Void {
+    public func download(from mtaFeedURL: K, completionHandler: @escaping @Sendable (MTAFeedWrapper?, MTAFeedDownloadError?) -> Void) -> Void {
         guard let urlRequest = mtaFeedURL.urlRequest(apiKey: apiKey) else {
             completionHandler(nil, MTAFeedDownloadError.noURL)
             return
@@ -38,7 +38,7 @@ public actor MTAFeedDownloader<K> where K: MTAFeedURL {
         return mtaFeedWrapper
     }
     
-    public func download(with urlRequest: URLRequest, completionHandler: @escaping (MTAFeedWrapper?, MTAFeedDownloadError?) -> Void) -> Void {
+    public func download(with urlRequest: URLRequest, completionHandler: @escaping @Sendable (MTAFeedWrapper?, MTAFeedDownloadError?) -> Void) -> Void {
         download(with: urlRequest) { result in
             switch result {
             case .success(let feed):
@@ -55,7 +55,7 @@ public actor MTAFeedDownloader<K> where K: MTAFeedURL {
         return mtaFeedProcessor.process(feed)
     }
     
-    private func download(with urlRequest: URLRequest, completionHandler: @escaping (Result<TransitRealtime_FeedMessage, MTAFeedDownloadError>) -> Void) -> Void {
+    private func download(with urlRequest: URLRequest, completionHandler: @escaping @Sendable (Result<TransitRealtime_FeedMessage, MTAFeedDownloadError>) -> Void) -> Void {
         self.logger.info("Start downloading feeds: urlRequest=\(urlRequest, privacy: .public)")
         let start = Date()
         
@@ -68,7 +68,7 @@ public actor MTAFeedDownloader<K> where K: MTAFeedURL {
             
             self.logger.debug("data = \(String(describing: data))")
             
-            let feed = try? TransitRealtime_FeedMessage(serializedData: data, extensions: Nyct_u45Subway_Extensions)
+            let feed = try? TransitRealtime_FeedMessage(serializedBytes: data, extensions: Nyct_u45Subway_Extensions)
             guard let feed = feed else {
                 self.logger.error("Cannot parse feed data: urlRequest=\(urlRequest, privacy: .public)")
                 completionHandler(.failure(.cannotParse))
@@ -95,7 +95,7 @@ public actor MTAFeedDownloader<K> where K: MTAFeedURL {
         
         self.logger.debug("data = \(String(describing: data))")
         
-        let feed = try? TransitRealtime_FeedMessage(serializedData: data, extensions: Nyct_u45Subway_Extensions)
+        let feed = try? TransitRealtime_FeedMessage(serializedBytes: data, extensions: Nyct_u45Subway_Extensions)
         
         guard let feed = feed else {
             logger.error("Cannot parse feed data: urlRequest=\(urlRequest, privacy: .public)")
