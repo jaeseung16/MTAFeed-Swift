@@ -16,7 +16,7 @@ let package = Package(
             targets: ["MTAFeed"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.0.0"),
+        .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.39.0"),
     ],
     targets: [
         .target(
