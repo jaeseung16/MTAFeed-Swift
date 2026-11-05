@@ -98,8 +98,25 @@ final class MTAFeedProcessor: Sendable {
     private func getAlert(from entity: TransitRealtime_FeedEntity, at date: Date) -> MTAAlert? {
         var mtaAlert: MTAAlert?
         if entity.hasAlert {
-            let headerText = entity.alert.headerText.translation.first?.text ?? "No Header Text"
-            mtaAlert = MTAAlert(delayedTrips: process(alert: entity.alert), headerText: headerText, date: date)
+            let alert = entity.alert
+            let headerText = text(from: alert.headerText) ?? "No Header Text"
+            let descriptionText = alert.hasDescriptionText ? text(from: alert.descriptionText) : nil
+            let effect = alert.hasEffect ? MTAAlertEffect(from: alert.effect) : nil
+            let cause = alert.hasCause ? MTAAlertCause(from: alert.cause) : nil
+            let informedEntities = alert.informedEntity.map { getInformedEntity(from: $0) }
+            let activePeriods = alert.activePeriod.map { period in
+                MTAActivePeriod(start: period.hasStart ? Date(timeIntervalSince1970: TimeInterval(period.start)) : nil,
+                                end: period.hasEnd ? Date(timeIntervalSince1970: TimeInterval(period.end)) : nil)
+            }
+            mtaAlert = MTAAlert(delayedTrips: process(alert: alert),
+                                headerText: headerText,
+                                date: date,
+                                id: entity.id,
+                                descriptionText: descriptionText,
+                                effect: effect,
+                                cause: cause,
+                                informedEntities: informedEntities,
+                                activePeriods: activePeriods)
             MTAFeedProcessor.logger.debug("mtaAlert=\(String(describing: mtaAlert), privacy: .public)")
         }
         return mtaAlert
@@ -120,11 +137,14 @@ final class MTAFeedProcessor: Sendable {
             let trip = vehicle.hasTrip ? getMTATrip(from: vehicle.trip) : nil
             let date = vehicle.hasTimestamp ? Date(timeIntervalSince1970: TimeInterval(vehicle.timestamp)) : Date()
             
+            let occupancyStatus = vehicle.hasOccupancyStatus ? MTAOccupancyStatus(from: vehicle.occupancyStatus) : nil
+            
             mtaVehicle = MTAVehicle(status: status,
                                     stopId: stopId,
                                     stopSequence: stopSequence,
                                     timestamp: date,
-                                    trip: trip)
+                                    trip: trip,
+                                    occupancyStatus: occupancyStatus)
         }
         //MTAFeedDownloader.logger.info("mtaVehicle = \(String(describing: mtaVehicle), privacy: .public)")
         return mtaVehicle
@@ -196,6 +216,8 @@ final class MTAFeedProcessor: Sendable {
         let trainId = nyctTrip.hasTrainID ? nyctTrip.trainID : nil
         let direction = nyctTrip.hasDirection ? MTADirection(from: nyctTrip.direction) : nil
         let assigned = nyctTrip.hasIsAssigned ? nyctTrip.isAssigned : nil
+        let directionId = trip.hasDirectionID ? trip.directionID : nil
+        let scheduleRelationship = trip.hasScheduleRelationship ? MTAScheduleRelationship(from: trip.scheduleRelationship) : nil
         
         let startDate = trip.hasStartDate ? trip.startDate : nil
         let startTime = trip.hasStartTime ? trip.startTime : nil
@@ -219,6 +241,25 @@ final class MTAFeedProcessor: Sendable {
                        start: start,
                        assigned: assigned,
                        trainId: trainId,
-                       direction: direction)
+                       direction: direction,
+                       directionId: directionId,
+                       scheduleRelationship: scheduleRelationship)
+    }
+    
+    private func getInformedEntity(from selector: TransitRealtime_EntitySelector) -> MTAInformedEntity {
+        return MTAInformedEntity(agencyId: selector.hasAgencyID ? selector.agencyID : nil,
+                                 routeId: selector.hasRouteID ? selector.routeID : nil,
+                                 routeType: selector.hasRouteType ? Int(selector.routeType) : nil,
+                                 stopId: selector.hasStopID ? selector.stopID : nil,
+                                 trip: selector.hasTrip ? getMTATrip(from: selector.trip) : nil)
+    }
+    
+    /// Prefers the English translation, then the one without a language, then the first.
+    private func text(from translatedString: TransitRealtime_TranslatedString) -> String? {
+        let translations = translatedString.translation
+        let translation = translations.first { $0.hasLanguage && $0.language.lowercased().hasPrefix("en") }
+            ?? translations.first { !$0.hasLanguage }
+            ?? translations.first
+        return translation?.text
     }
 }
