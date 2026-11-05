@@ -13,12 +13,14 @@ public struct MTAVehicle: Hashable, Sendable {
     public let stopSequence: UInt?
     public let timestamp: Date?
     public let trip: MTATrip?
+    public let occupancyStatus: MTAOccupancyStatus?
     
-    public init(status: MTAVehicleStatus, stopId: String?, stopSequence: UInt?, timestamp: Date?, trip: MTATrip?) {
+    public init(status: MTAVehicleStatus, stopId: String?, stopSequence: UInt?, timestamp: Date?, trip: MTATrip?, occupancyStatus: MTAOccupancyStatus? = nil) {
         self.status = status
         self.stopId = stopId
         self.stopSequence = stopSequence
         self.timestamp = timestamp
         self.trip = trip
+        self.occupancyStatus = occupancyStatus
     }
 }

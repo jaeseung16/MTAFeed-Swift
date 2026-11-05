@@ -14,18 +14,27 @@ public struct MTATrip: CustomStringConvertible, Hashable, Sendable {
     public let assigned: Bool?
     public let trainId: String?
     public let direction: MTADirection?
+    /// GTFS `direction_id` (0 or 1). Bus feeds set this; subway feeds use `direction` instead.
+    public let directionId: UInt32?
+    public let scheduleRelationship: MTAScheduleRelationship?
     
-    public var description: String {
-        return "MTATrip[tripId=\(String(describing: tripId)), routeId=\(String(describing: routeId)), start=\(String(describing: start)), assigned=\(String(describing: assigned)) trainId=\(String(describing: trainId)), direction=\(String(describing: direction))]"
+    public var isCanceled: Bool {
+        return scheduleRelationship == .canceled
     }
     
-    public init(tripId: String? = nil, routeId: String? = nil, start: Date? = nil, assigned: Bool? = nil, trainId: String? = nil, direction: MTADirection? = nil) {
+    public var description: String {
+        return "MTATrip[tripId=\(String(describing: tripId)), routeId=\(String(describing: routeId)), start=\(String(describing: start)), assigned=\(String(describing: assigned)) trainId=\(String(describing: trainId)), direction=\(String(describing: direction)), directionId=\(String(describing: directionId)), scheduleRelationship=\(String(describing: scheduleRelationship))]"
+    }
+    
+    public init(tripId: String? = nil, routeId: String? = nil, start: Date? = nil, assigned: Bool? = nil, trainId: String? = nil, direction: MTADirection? = nil, directionId: UInt32? = nil, scheduleRelationship: MTAScheduleRelationship? = nil) {
         self.tripId = tripId
         self.routeId = routeId
         self.start = start
         self.assigned = assigned
         self.trainId = trainId
         self.direction = direction
+        self.directionId = directionId
+        self.scheduleRelationship = scheduleRelationship
     }
     
     public func getDirection() -> MTADirection? {
